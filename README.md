@@ -1,7 +1,7 @@
 # Dimalis: a new way of analysing your timelapse images fast and efficiently
 
 <p align="center">
-  <img width="500" height="300" src="https://github.com/Helena-todd/Dimalis/blob/master/dimalis_pipeline.png">
+  <img width="500" height="300" src="https://github.com/Helena-todd/Dimalis/blob/main/dimalis_pipeline.png">
 </p>
 
 Dimalis is wrapped in a docker structure, which facilitates its installation on any operating system and allows to perform image denoising, single cell segmentation and cell tracking by running one line of code only!
