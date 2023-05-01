@@ -45,10 +45,10 @@ The docker App should now start building the docker image on your computer.
 
 After a while, (this process can take a few minutes), all the steps should be completed. Dimalis is now ready to use!
 
-### Step 4: Use docker-STrack to track cells in the test images
+### Step 4: Use docker-Dimalis to segment, track, and extract features from cells in the test images
 
 Dimalis takes a few parameters as input:
-- *[data_path]* the path to the segmented images
+- *[data_path]* the path to the raw images
 - *[denoising_sd]* the standard deviation of noise to attenuate (denoising parameter)
 - *[cell_diam]* the average diameter of cells, in pixels (cell segmentation parameter)
 - *[max_dist]* the maximum distance to look for descendance in a cell's surrounding (tracking parameter)
@@ -82,6 +82,10 @@ The feature_tables subfolder will contain one CSV table per image, in which each
 The STrack subfolder will contain the tracking results. For each image - 1 (the cells in the 1st image cannot be tracked by definition), STrack returns:
 - a CSV table, that contains the links from cells in the previous to cells in the current image
 - a PNG image, in which these links are represented as red lines
+
+Two summary tables are also outputted:
+- the complete_tracking_table.xlsx table (in the STrack folder), contains all the tracks between all cells, for all timepoints in your timelapse
+- the final_merged_table.xlsx contains all measurements that were extracted from these cells, for all timepoints
 
 ### Step 5: Use Dimalis to analyse cells in your own images
 
