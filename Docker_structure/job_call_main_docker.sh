@@ -1,5 +1,5 @@
-#Call script arguments: /home/test_images/  0.0001  29.5   50     30     skip_denoising
-#                       ${1}                ${2}    ${3}   ${4}   ${5}   ${6}
+#Call script arguments: /home/test_images/  0.0001  29.5  50    30    skip_denoising
+#                       ${1}                ${2}    ${3}  ${4}  ${5}  ${6}
 
 # Move to the folder containing the Raw images
 cd ${1}/exported/
@@ -74,7 +74,6 @@ ft_dir="${1}/feature_tables/"
 # Launch script to extract features
 python3 /home/scripts/extract_features_regionprops.py ${ft_dir}
 
-
 ######################################
 #####    STrack cell tracking    #####
 ######################################
@@ -89,3 +88,11 @@ strack_dir="${1}/STrack/"
 
 # Launch script to extract features
 python3 /home/scripts/strack_script_v4.py ${4} ${5} ${strack_dir}
+
+cd ${1}/STrack/
+
+# Launch script to merge STrack results into 2 excel tables
+python3 -W ignore /home/scripts/strack_merge_tables.py ${strack_dir}
+
+# Launch script to merge all results (STrack, features) into one table
+python3 -W ignore /home/scripts/merge_all_tables.py ${1}
