@@ -42,6 +42,12 @@ for i, row in df_append.iterrows():
         incremental_ID += 1
     df_append['Mask_nb'][i] = stocked_IDs[coords_tmp_d]
 
+# Finally, remove the redundant rows, where Mother_mask == Mask_nb
+same_value_rows = df_append[df_append['Mother_mask'] == df_append['Mask_nb']]
+df_append = df_append.drop(same_value_rows.index)
+# and reset index: drop=True ensures that the old index is dropped and a new default index is assigned to the DataFrame.
+df_append = df_append.reset_index(drop=True)
+
 # Export the final panda dataframe in csv format
 df_append.to_excel(output_dir + "complete_tracking_table.xlsx", index=False)
 
