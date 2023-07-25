@@ -43,6 +43,7 @@ ft_final_df.Centroid_y = [int(item) for item in ft_final_df.Centroid_y]
 # doc found here: https://pandas.pydata.org/docs/user_guide/merging.html
 result = pd.merge(strack_table, ft_final_df, how="outer", on=["Centroid_x", "Centroid_y", "Timepoint"])
 
+
 # remove rows where Mask_nb = NA
 result2 = result.dropna(subset=['Mask_nb'])
 
