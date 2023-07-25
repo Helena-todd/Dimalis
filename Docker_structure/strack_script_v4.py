@@ -10,87 +10,35 @@ import glob
 from scipy.spatial.distance import cdist
 # skimage package to identify objects, export region properties
 from skimage.measure import label, regionprops, regionprops_table
+import dask
+from helper import count_cells, compute_centroids
 
-# List files in current folder
-files_list = sorted(glob.glob("*.tif"))
 
-# Get variables from system env
-max_dist = sys.argv[1]
-max_angle = sys.argv[2]
-output_dir = sys.argv[3]
-
-for tp in range(1,len(files_list)):
-    #print('Tp is ', tp)
-    # Add a 0 in front of tp if contains only one number
-    tp0 = '%02d' % (tp-1,)
-    tp1 = '%02d' % (tp,)
-    # Import image corresponding to timepoint tp and tp-1
-    print('Processing file ', files_list[tp])
-    img1 = io.imread(files_list[tp])
-    img0 = io.imread(files_list[tp-1])
-    
- 
-    # See how many cells were identified in the images (ranged in the "unique" vectors)
-    unique1, counts1 = np.unique(img1, return_counts=True)
-    # In registered images, it can happen that one cell gets skipped in the unique1 array, which leads to number of cells in unique1 and counts1 NOT MATCHING the unique1 indices. I thus create a unique11 array with continuous cell indices, to be used to track daughters that are still unmatched.
-    unique11 = np.array(range(0, len(unique1)))
-    unique0, counts0 = np.unique(img0, return_counts=True)
-    unique01 = np.array(range(0, len(unique0)))
-    
-    ############################################################
-    # compute the mask centroids of all cells in img0 and img1 #
-    ############################################################
-    my_array0 = np.empty((0,2), int)
-    for mask_tmp in unique0[1:]:
-        # Keep only current mask, replace all other values by 0
-        img_tmp = np.where(img0 != mask_tmp, 0, img0)
-    
-        # compute cell centroid
-        M = cv2.moments(img_tmp)
-        cx = int(M['m10'] / M['m00'])
-        cy = int(M['m01'] / M['m00'])
-        my_array0=np.append(my_array0,[[cx,cy]], axis=0)
-    
-    my_array1 = np.empty((0,2), int)
-    for mask_tmp in unique1[1:]: # [:1] because I'm not interested in pixels with a value of 0: the background
-        # Keep only current mask, replace all other values by 0
-        img_tmp = np.where(img1 != mask_tmp, 0, img1)
-    
-        # compute cell centroid
-        M = cv2.moments(img_tmp)
-        cx = int(M['m10'] / M['m00'])
-        cy = int(M['m01'] / M['m00'])
-        my_array1=np.append(my_array1,[[cx,cy]], axis=0)
-    
-    ########################################################################################
-    # Compute distances between 2 matrices (in a similar way to R's pdist::pdist function) #
-    ########################################################################################
-    dist_mat = cdist(my_array0, my_array1)
-    
+def _compute_matching_percentages(uniquetmp0, uniquetmp1, unique_corrected0, imgtmp0, imgtmp1, distmattmp, maxdisttmp):
     #################################################################################
     # Compute percentage of matching pixels between masks in img0 and masks in img1 #
     #################################################################################
     # Create empty array, has as many columns as number of cells in img1
-    matching_pctgs = np.empty((0,len(unique1)-1), int)
-
-    # Loop over masks in img0
-    for idx0 in unique01[:len(unique01)-1]:
-        # Keep only current mask, replace all other values by 0
-        img_tmp0 = np.where(img0 != unique0[1:][idx0], 0, img0)
+    matching_pctgs = np.empty((0,len(uniquetmp1)-1), int)
     
+    # Loop over masks in img0
+    for idx0 in unique_corrected0[:len(unique_corrected0)-1]:
+        # Keep only current mask, replace all other values by 0
+        img_mask0 = np.where(imgtmp0 != uniquetmp0[1:][idx0], 0, imgtmp0)
+        
         # Loop over masks in img1 that are close enough to the current cell in img0
-        distances_to_mother = dist_mat[idx0,:]
+        distances_to_mother = distmattmp[idx0,:]
         line_tmp = np.zeros(len(distances_to_mother)) # create an empty array that will store final percentages
-        indices1 = np.where(distances_to_mother <= int(max_dist))
+        indices1 = np.where(distances_to_mother <= int(maxdisttmp))
         
         for idx1 in indices1[0]:
             # Keep only current mask, replace all other values by 0
-            img_tmp1 = np.where(img1 != unique1[1:][idx1], 0, img1)
-        
+            img_mask1 = np.where(imgtmp1 != uniquetmp1[1:][idx1], 0, imgtmp1)
+            
             # flatten both images, replace all non 0 values by 1
-            img_flattened0 = img_tmp0.flatten()
+            img_flattened0 = img_mask0.flatten()
             img_flattened0[img_flattened0 != 0] = 1
-            img_flattened1 = img_tmp1.flatten()
+            img_flattened1 = img_mask1.flatten()
             img_flattened1[img_flattened1 != 0] = 1
             # change integers to floats
             img_flattened0 = img_flattened0.astype('float')
@@ -103,30 +51,83 @@ for tp in range(1,len(files_list)):
             pctg_matching = (len(img_differences[img_differences==True]))/(len(img_flattened1[img_flattened1!=0]))*100
             # add current pctg matching value to the line for current mask in img0 and in img1
             line_tmp[idx1] = pctg_matching
-           
+        
         # Fill in complete line of matching pctgs for current mask in img0
         matching_pctgs = np.append(matching_pctgs, [line_tmp], axis=0)
-    
+    return matching_pctgs
+
+def _compute_orientations(uniquetmp0, imgtmp0):
     ##############################################################
     # Compute orientation of the main axis of cell masks in img0 #
     ##############################################################
     # Create an empty array to store cell orientations
     orientations = np.array([])
-
+    
     # Loop over masks in img0
-    for idx0 in unique0[1:]:
+    for idx0 in uniquetmp0[1:]:
         # Keep only current mask, replace all other values by 0
-        img_tmp0 = np.where(img0 != idx0, 0, img0)
+        img_mask0 = np.where(imgtmp0 != idx0, 0, imgtmp0)
         # Replace all values different from 0 by 1
-        img_tmp0[img_tmp0 != 0] = 1
+        img_mask0[img_mask0 != 0] = 1
         # Compute regions
-        regions = regionprops(img_tmp0)
+        regions = regionprops(img_mask0)
         # The 'Orientation' property of REGIONPROPS returns the angle (in degrees)
         # between the x-axis and the major axis of the cell.
         # ranging from `-pi/2` to `pi/2` counter-clockwise
-           
+        
         # Fill in orientations vector
         orientations = np.append(orientations, math.degrees(regions[0].orientation)) # math.degrees allows to change radiants into degrees
+    return orientations
+
+def _rescale_orientations(orientationtmp):
+    if ((orientationtmp >= -180) and (orientationtmp <= -90)):
+        orientationtmp = -orientationtmp - 90
+    elif ((orientationtmp >= 0) and (orientationtmp <= 90)):
+        orientationtmp = 90 - orientationtmp
+    elif ((orientationtmp > -90) and (orientationtmp < 0)):
+        orientationtmp = -90 - orientationtmp
+    elif ((orientationtmp > 90) and (orientationtmp <= 180)):
+        orientationtmp = - orientationtmp + 90
+    return orientationtmp
+
+
+
+@dask.delayed
+def _compute(tp, files_list, output_dir, max_dist, max_angle):
+    #print('Tp is ', tp)
+    # Add a 0 in front of tp if contains only one number
+    tp0 = '%02d' % (tp-1,)
+    tp1 = '%02d' % (tp,)
+    # Import image corresponding to timepoint tp and tp-1
+    print('Processing file ', files_list[tp])
+    img1 = io.imread(files_list[tp])
+    img0 = io.imread(files_list[tp-1])
+    
+ 
+    # See how many cells were identified in the images (ranged in the "unique" vectors)
+    unique1, counts1, unique11 = count_cells(img1)
+    unique0, counts0, unique01 = count_cells(img0)
+    
+    ############################################################
+    # compute the mask centroids of all cells in img0 and img1 #
+    ############################################################
+    my_array0 = compute_centroids(unique0, img0)
+    my_array1 = compute_centroids(unique1, img1)
+    
+    ########################################################################################
+    # Compute distances between 2 matrices (in a similar way to R's pdist::pdist function) #
+    ########################################################################################
+    dist_mat = cdist(my_array0, my_array1)
+    
+    #################################################################################
+    # Compute percentage of matching pixels between masks in img0 and masks in img1 #
+    #################################################################################
+    matching_pctgs = _compute_matching_percentages(unique0, unique1, unique01, img0, img1, dist_mat, max_dist)
+    
+    ##############################################################
+    # Compute orientation of the main axis of cell masks in img0 #
+    ##############################################################
+    orientations = _compute_orientations(unique0, img0)
     
     ###########################################################################################
     # Identify mother-daughter links according to highest pixel matching or distance matching #
@@ -194,14 +195,7 @@ for tp in range(1,len(files_list)):
             
                 # Re-scale daughters orientation so that it matches the scale of the mother orientation,
                 # which allows to make the angles comparable
-                if ((orientation_daughters >= -180) and (orientation_daughters <= -90)):
-                    orientation_daughters = -orientation_daughters - 90
-                elif ((orientation_daughters >= 0) and (orientation_daughters <= 90)):
-                    orientation_daughters = 90 - orientation_daughters
-                elif ((orientation_daughters > -90) and (orientation_daughters < 0)):
-                    orientation_daughters = -90 - orientation_daughters
-                elif ((orientation_daughters > 90) and (orientation_daughters <= 180)):
-                    orientation_daughters = - orientation_daughters + 90
+                orientation_daughters = _rescale_orientations(orientation_daughters)
                 
                 orientation_mother = orientations[mother_tmp-1]
                 #print("Orientation of mother is ", orientation_mother, " and its sign is ", np.sign(orientation_mother))
@@ -308,14 +302,7 @@ for tp in range(1,len(files_list)):
 
                     # Re-scale daughters orientation so that it matches the scale of the mother orientation,
                     # which allows to make the angles comparable
-                    if ((orientation_daughters >= -180) and (orientation_daughters <= -90)):
-                        orientation_daughters = -orientation_daughters - 90
-                    elif ((orientation_daughters >= 0) and (orientation_daughters <= 90)):
-                        orientation_daughters = 90 - orientation_daughters
-                    elif ((orientation_daughters > -90) and (orientation_daughters < 0)):
-                        orientation_daughters = -90 - orientation_daughters
-                    elif ((orientation_daughters > 90) and (orientation_daughters <= 180)):
-                        orientation_daughters = - orientation_daughters + 90
+                    orientation_daughters = _rescale_orientations(orientation_daughters)
 
                     #print("Orientation of division AFTER RESCALING is ", orientation_daughters, " and its sign is ", np.sign(orientation_daughters))
 
@@ -397,3 +384,18 @@ for tp in range(1,len(files_list)):
         plt.plot([complete_table.loc[row_idx]['Centroid_x_mother'], complete_table.loc[row_idx]['Centroid_x']], [complete_table.loc[row_idx]['Centroid_y_mother'], complete_table.loc[row_idx]['Centroid_y']], 'r-', lw=2)
     #plt.show()
     plt.savefig(output_dir + f"tracking_figure_time{tp}.png")
+
+def _track_cells(files_list, output_dir, max_dist, max_angle):
+    delayed_results = []
+    for tp in range(1,len(files_list)):
+        delayed_results.append(_compute(tp, files_list, output_dir, max_dist, max_angle))
+    dask.compute(delayed_results, scheduler='threads')
+
+if __name__=="__main__":
+    # List files in current folder
+    files_list = sorted(glob.glob("*.tif"))
+    # Get variables from system env
+    max_dist = sys.argv[1]
+    max_angle = sys.argv[2]
+    output_dir = sys.argv[3]
+    _track_cells(files_list, output_dir, max_dist, max_angle)
