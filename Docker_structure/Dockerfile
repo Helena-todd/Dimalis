@@ -15,8 +15,11 @@ RUN apt-get install libopenblas-dev -y
 #RUN pip install git+https://github.com/MouseLand/cellpose/releases/tag/v0.7.2#egg=cellpose
 RUN pip3 install cellpose==0.7.1
 RUN apt-get install vim -y
+# install dask for parallelisation
+RUN pip install dask
 COPY job_call_main_docker.sh /home/scripts/
 COPY python_bm3d_script_bash.py /home/scripts/
+COPY helper.py /home/scripts/
 COPY extract_features_regionprops.py /home/scripts/
 COPY strack_script_v4.py /home/scripts/
 COPY strack_merge_tables.py /home/scripts/
