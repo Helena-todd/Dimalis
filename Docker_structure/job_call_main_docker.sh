@@ -94,5 +94,5 @@ cd ${1}/STrack/
 # Launch script to merge STrack results into 2 excel tables
 python3 -W ignore /home/scripts/strack_merge_tables.py ${strack_dir}
 
-# Launch script to merge all results (STrack, features) into one table
+# Launch script to merge all results (STrack, features, fluo features) into one table
 python3 -W ignore /home/scripts/merge_all_tables.py ${1}
