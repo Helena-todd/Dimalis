@@ -45,7 +45,7 @@ elif [[ $APPLY_DENOISING -eq 1 ]]
 then
     echo "Denoising cells using the BM3D algorithm "
     # call bm3d python script
-    python3 /home/scripts/python_bm3d_script_bash.py $MYIMG $MYDENOISEDIMG ${1}/exported $DENOISING_SD
+    python3 /home/scripts/python_bm3d_script_bash.py $MYIMG $MYDENOISEDIMG /home/test_images/exported $DENOISING_SD
     # Move images to the directory where they should be
     bm3ddir="/home/test_images/BM3D/$DENOISING_SD"
     mv denoised* /home/test_images/BM3D/$DENOISING_SD
