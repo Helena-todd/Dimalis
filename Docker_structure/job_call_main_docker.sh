@@ -1,17 +1,11 @@
 #Call script arguments: /home/test_images/  0.0001  29.5  50    30    skip_denoising
 #                       ${1}                ${2}    ${3}  ${4}  ${5}  ${6}
 
-DENOISING_SD=${2}
-CELL_DIAM=${3}
-MAX_DIST=${4}
-MAX_ANGLE=${5}
-APPLY_DENOISING=${6}
-
-export DENOISING_SD
-export CELL_DIAM
-export MAX_DIST
-export MAX_ANGLE
-export APPLY_DENOISING
+#export DENOISING_SD
+#export CELL_DIAM
+#export MAX_DIST
+#export MAX_ANGLE
+#export APPLY_DENOISING
 
 # Move to the folder containing the Raw images
 cd /home/test_images/
@@ -36,21 +30,21 @@ export MYDENOISEDIMG
 
 if [[ $APPLY_DENOISING -eq 0 ]]
 then
-    # Copy paste raw images to the BM3D directory #, adding a denoised_ prefix
-    echo "Skipping cell denoising"
-    bm3ddir="/home/test_images/BM3D/$DENOISING_SD"
-    cp * ${bm3ddir}
-    
+# Copy paste raw images to the BM3D directory #, adding a denoised_ prefix
+echo "Skipping cell denoising"
+bm3ddir="/home/test_images/BM3D/$DENOISING_SD"
+cp -r * ${bm3ddir}
+
 elif [[ $APPLY_DENOISING -eq 1 ]]
 then
-    echo "Denoising cells using the BM3D algorithm "
-    # call bm3d python script
-    python3 /home/scripts/python_bm3d_script_bash.py $MYIMG $MYDENOISEDIMG /home/test_images/exported $DENOISING_SD
-    # Move images to the directory where they should be
-    bm3ddir="/home/test_images/BM3D/$DENOISING_SD"
-    mv denoised* /home/test_images/BM3D/$DENOISING_SD
+echo "Denoising cells using the BM3D algorithm "
+# call bm3d python script
+python3 /home/scripts/python_bm3d_script_bash.py $MYIMG $MYDENOISEDIMG /home/test_images $DENOISING_SD
+# Move images to the directory where they should be
+bm3ddir="/home/test_images/BM3D/$DENOISING_SD"
+mv denoised* /home/test_images/BM3D/$DENOISING_SD
 else
-    echo "Please use one of the two denoising options, either 0 (skip denoising) or 1 (denoise) "
+echo "Please use one of the two denoising options, either 0 (skip denoising) or 1 (denoise) "
 fi
 
 done # ends image loop
