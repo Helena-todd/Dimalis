@@ -29,8 +29,8 @@ In the docker Desktop App, <br />
 
 (1) Then click on "Images" and <br />
 (2) click on "Hub images" and <br />
-(2) select the "helenatodd/dimalis:v1.2" docker image by clicking on it. <br />
-(3) Finally, click on the "Run" button to download Dimalis and launch the interface that will allow you to launch Dimalis on your raw images.
+(3) select the "helenatodd/dimalis:v1.2" docker image by clicking on it. <br />
+(4) Finally, click on the "Run" button to download Dimalis and launch the interface that will allow you to launch Dimalis on your raw images.
 
 <p align="center">
   <img width="800" height="450" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step22.png">
