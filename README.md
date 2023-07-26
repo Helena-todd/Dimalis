@@ -21,11 +21,10 @@ Once you have completed the installation, you can launch the Docker Desktop App
 ### Step 2: Search for the helenatodd/dimalis image from the Docker Desktop App
 
 In the docker Desktop App, <br />
-(1) Click on the "Search" bar <br />
-(2) Type "helenatodd/dimalis"
+(1) Click on the "Search" bar and type "helenatodd/dimalis"
 
 <p align="center">
-  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/search_helenatodd_strack.png">
+  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step21.png">
 </p>
 
 (1) Then click on "Images" and <br />
@@ -33,7 +32,7 @@ In the docker Desktop App, <br />
 (3) Finally, click on the "Run" button to launch the interface that will allow you to launch Dimalis on your raw images.
 
 <p align="center">
-  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/image_helenatodd_strack.png">
+  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step22.png">
 </p>
 
 ### Step 3: Run Dimalis on your images
@@ -41,7 +40,7 @@ In the docker Desktop App, <br />
 First, click on the arrow next to "Optional settings" to access the settings of Dimalis (1):
 
 <p align="center">
-  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/optsettings_helenatodd_strack.png">
+  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step31.png">
 </p>
 
 You can now define the Dimalis parameters: <br />
@@ -53,7 +52,7 @@ You can now define the Dimalis parameters: <br />
 (6) Click on the "+" button to enter a second parameter
 
 <p align="center">
-  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/run_helenatodd_strack.png">
+  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step32.png">
 </p>
 
 You can then provide information on the remaining Dimalis parameters: <br />
@@ -68,7 +67,7 @@ You can then provide information on the remaining Dimalis parameters: <br />
 (9) Finally, you can hit the "Run" button to launch Dimalis on your data <br />
 
 <p align="center">
-  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/run_helenatodd_strack2.png">
+  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step33.png">
 </p>
 
 ### Dimalis results
