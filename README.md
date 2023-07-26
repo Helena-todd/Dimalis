@@ -48,7 +48,7 @@ You can now define the Dimalis parameters: <br />
 (1) The first box can stay empty, it allows you to give a name to the container that will be launched, but docker will give it a default name if you don't. <br />
 (2) By clicking on those three dots, you will be able to browse, on your computer, into the folder containing the raw images on which you wish to apply Dimalis (or into the /test_images folder that we provided) <br />
 (3) Type "/home/test_images/" in this box <br />
-(4) Type "DESNOISING_SD" in this box. This will allow you to define the standard deviation of noise that you wish to attenuate in your images using the BM3D denoising algorithm <br />
+(4) Type "DENOISING_SD" in this box. This will allow you to define the standard deviation of noise that you wish to attenuate in your images using the BM3D denoising algorithm <br />
 (5) Type the standart devaviation value you wish to set (typically between 0.0001 for a very light denoising effect and 0.01 to denoise highly noisy images) <br />  
 (6) Click on the "+" button to enter a second parameter
 
