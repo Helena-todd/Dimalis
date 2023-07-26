@@ -24,15 +24,16 @@ In the docker Desktop App, <br />
 (1) Click on the "Search" bar and type "helenatodd/dimalis"
 
 <p align="center">
-  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step21.png">
+  <img width="800" height="450" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step21.png">
 </p>
 
 (1) Then click on "Images" and <br />
-(2) select the "helenatodd/dimalis:v1.1" docker image by clicking on it. <br />
-(3) Finally, click on the "Run" button to launch the interface that will allow you to launch Dimalis on your raw images.
+(2) click on "Hub images" and <br />
+(2) select the "helenatodd/dimalis:v1.2" docker image by clicking on it. <br />
+(3) Finally, click on the "Run" button to download Dimalis and launch the interface that will allow you to launch Dimalis on your raw images.
 
 <p align="center">
-  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step22.png">
+  <img width="800" height="450" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step22.png">
 </p>
 
 ### Step 3: Run Dimalis on your images
@@ -40,7 +41,7 @@ In the docker Desktop App, <br />
 First, click on the arrow next to "Optional settings" to access the settings of Dimalis (1):
 
 <p align="center">
-  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step31.png">
+  <img width="800" height="450" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step31.png">
 </p>
 
 You can now define the Dimalis parameters: <br />
@@ -48,11 +49,11 @@ You can now define the Dimalis parameters: <br />
 (2) By clicking on those three dots, you will be able to browse, on your computer, into the folder containing the raw images on which you wish to apply Dimalis (or into the /test_images folder that we provided) <br />
 (3) Type "/home/test_images/" in this box <br />
 (4) Type "DENOISING_SD" in this box. This will allow you to define the standard deviation of noise that you wish to attenuate in your images using the BM3D denoising algorithm <br />
-(5) Type the standart devaviation value you wish to set (typically between 0.0001 for a very light denoising effect and 0.01 to denoise highly noisy images) <br />  
+(5) Type the standard deviation value you wish to set (typically between 0.0001 for a very light denoising effect and 0.01 to denoise highly noisy images) <br />  
 (6) Click on the "+" button to enter a second parameter
 
 <p align="center">
-  <img width="800" height="500" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step32.png">
+  <img width="800" height="450" src="https://github.com/Helena-todd/Dimalis/blob/main/readme_images/step32.png">
 </p>
 
 You can then provide information on the remaining Dimalis parameters: <br />
