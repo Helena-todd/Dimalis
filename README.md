@@ -1,92 +1,86 @@
-# Dimalis: a new way of analysing your timelapse images fast and efficiently
+# STrack: a tool to Simply Track cells in your timelapse images
 
 <p align="center">
-  <img width="500" height="300" src="https://github.com/Helena-todd/Dimalis/blob/main/dimalis_pipeline.png">
+  <img width="500" height="300" src="https://github.com/Helena-todd/STrack/blob/master/cell_tracking.png">
 </p>
 
-Dimalis is wrapped in a docker structure, which facilitates its installation on any operating system and allows to perform image denoising, single cell segmentation and cell tracking by running one line of code only!
+To facilitate the installation and reproducible usability of STrack, we made a docker version of the package.
 
-## Here's a user-friendly step-by-step protocol to analyse cells in your images using Dimalis:
+*Note: On this github page, we provided a few images from a timelapse that you can use as test images for STrack. In order to find them, scroll up to the top of this page and click on the green "Code" button and on "Download zip". The zipped folder that you will download contains a /test_images subfolder, containing cell masks that we obtained by using Omnipose (Kevin J. Cutler et al, 2021, [Omnipose](https://github.com/kevinjohncutler/omnipose.git)). You can of course use the segmentation tool of your choice to generate segmentation masks on your own images.*
+
+## Here's a user-friendly step-by-step protocol to track cells in your images using STrack:
 
 ### Step 1: Install the Docker Desktop App
 
-- **On Mac:** You will find the download link and instructions on this website: [Docker Desktop Mac install](https://docs.docker.com/desktop/mac/install/)
-- **On Windows:** You will find the download link and instructions on this website: [Docker Desktop Windows install](https://docs.docker.com/desktop/windows/install/)
+- **On Mac, Windows and Linux:** You will find the download link and instructions on this website: [Docker Desktop install](https://www.docker.com/products/docker-desktop/)
 
-Once you have completed the installation, you can lauch the Docker Desktop App
+Once you have completed the installation, you can launch the Docker Desktop App
 
-### Step 2: Dowlnoad Dimalis on your computer
+*Note: if you encounter issues with Docker Desktop on Windows, consider uninstalling it, restarting your computer, and re-installing Docker Desktop with admin rights, as explained on the docker forum (https://forums.docker.com/t/solved-docker-failed-to-start-docker-desktop-for-windows/106976).![image](https://user-images.githubusercontent.com/17719754/218061342-e727dca7-0ca3-4000-ab8a-615f1b2f1df7.png)*
 
-Git clone or download the Helena-todd/Dimalis repository.
+### Step 2: Search for the helenatodd/strack image from the Docker Desktop App
 
-You should now have a Dimalis folder on your computer. This folder contains:
-- A Docker_structure sub-folder. Everything necessary to build the Dimalis docker image is stored there.
-- A test_images/exported subfolder. We provided a few images from a timelapse to help you test Dimalis. 
+In the docker Desktop App, <br />
+(1) Click on the "Search" bar <br />
+(2) Type "helenatodd/strack"
 
-### Step 3: Build the Dimalis docker image on your computer
+<p align="center">
+  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/search_helenatodd_strack.png">
+</p>
 
-Open a command line:
-- **On Mac:** you will find it in your Applications/Utilities/Terminal
-- **On Windows:** you will find it by typing "Command Prompt" in the Power User Menu
+(1) Then click on "Images" and <br />
+(2) select the "helenatodd/strack:v1.1" docker image by clicking on it. <br />
+(3) Finally, click on the "Run" button to launch the interface that will allow you to launch STrack on your segmented images.
 
-Move to the Dimalis/Docker_structure directory on your computer by typing "cd" followed by the path to the directory:
-- **On Mac:** 
-> cd path_to_Dimalis/Docker_structure_directory
-(e.g. cd /Users/Helena/Documents/Dimalis/Docker_structure)
-- **On Windows:** 
-> cd path_to_Dimalis\Docker_structure_directory
-(e.g. cd C:\Users\Helena\Documents\Dimalis\Docker_structure)
+<p align="center">
+  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/image_helenatodd_strack.png">
+</p>
 
-Build the image by typing:
-> docker build . –t dimalis
+### Step 3: Run STrack on your images
 
-The docker App should now start building the docker image on your computer. 
-(if not, make sure that you did not forget to launch the Docker Desktop App)
+First, click on the arrow next to "Optional settings" to access the settings of STrack (1):
 
-After a while, (this process can take a few minutes), all the steps should be completed. Dimalis is now ready to use!
+<p align="center">
+  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/optsettings_helenatodd_strack.png">
+</p>
 
-### Step 4: Use docker-Dimalis to segment, track, and extract features from cells in the test images
+You can now define the STrack parameters: <br />
+(1) The first box can stay empty, it allows you to give a name to the container that will be launched, but docker will give it a default name if you don't. <br />
+(2) By clicking on those three dots, you will be able to browse, on your computer, into the folder containing the segmented images in which you wish to track cells using STrack (or into the /test_images folder that we provided) <br />
+(3) Type "/home/test_images/" in this box <br />
+(4) Type "MAXDIST" in this box. This will allow you to define the maximum distance to look for descendance in a cell's surrounding <br />
+(5) Type the maximum distance value you wish to set (as an example, we set this maximum distance to 50 pixels) <br />
+(6) Click on the "+" button to enter a second parameter
 
-Dimalis takes a few parameters as input:
-- *[data_path]* the path to the raw images
-- *[denoising_sd]* the standard deviation of noise to attenuate (denoising parameter)
-- *[cell_diam]* the average diameter of cells, in pixels (cell segmentation parameter)
-- *[max_dist]* the maximum distance to look for descendance in a cell's surrounding (tracking parameter)
-- *[max_angle]* the maximum angle allowed for cell division (tracking parameter)
-- *[apply_denoising]* this last parameter defines whether to apply denoising on the images (1) or to skip denoising (0), as denoising can be time-consuming and is not always necessary.
+<p align="center">
+  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/run_helenatodd_strack.png">
+</p>
 
-As a first try, we advise to test Dimalis with the default parameters that we provide, even on your own images. We have thoroughly tested this combination of parameters on numerous timelapses and found that they were adequate to track cells of variable size and shape. If Dimalis returns sub-optimal results, you can later try to change the parameter values. Here are some guidelines on how the parameters can be adjusted:
-- *[denoising_sd]* if your images are highly noisy (i.e. salt and pepper noise), you can try to increase this parameter. We typically set this value between 0.0001 (low denoising) and 0.1 (high denoising).
-- *[cell_diam]* if the size of cells in your images differs significantly from our test_images, you can try to lower this parameter (if cells are smaller in your images) or to increase it (if cells are bigger in your images). 
-- *[max_dist]* if cells tend to move significantly between two timepoints in your timelapse, you can increase this parameter (i.e. you can allow a cell displacement of 100 pixels as opposed to the 50 pixels we defined by default).
-- *[max_angle]* if your cells rotate a lot after cell division, you can increase this parameter (i.e. you can allow an angle of 45° between a mother cell and its 2 daughter cells, as opposed to the 30° that we defined as default).
+You can then provide information on the second STrack parameter: <br />
+(1) Type "MAXANGLE" in this box. This will allow you to define the maximum angle allowed for cell division <br />
+(2) Type the maximum angle value you wish to set (as an example, we set this maximum angle to 30°) <br />
+(3) Finally, you can hit the "Run" button to launch STrack on your data <br />
 
-Now that you have built the docker-Dimalis image, you can use it to analyse cells in images, by typing:
-- **On Mac:** 
-> docker run -v *[data_path]*:/home/test_images/ dimalis /home/test_images/ *[denoising_sd]* *[cell_diam]* *[max_dist]* *[max_angle]* *[apply_denoising]*
-(e.g. docker run -v /Users/Helena/Documents/Dimalis/test_images/:/home/test_images/ dimalis /home/test_images/ 0.0001 29.5 50 30 1)
-- **On Windows:** 
-> docker run -v *[data_path]*:/home/test_images/ dimalis /home/test_images/ *[denoising_sd]* *[cell_diam]* *[max_dist]* *[max_angle]* *[apply_denoising]*
-(e.g. docker run -v C:\Users\Helena\Documents\Dimalis\test_images\:/home/test_images/ dimalis /home/test_images/ 0.0001 29.5 50 30 1)
+<p align="center">
+  <img width="1000" height="500" src="https://github.com/Helena-todd/STrack/blob/master/readme_images/run_helenatodd_strack2.png">
+</p>
 
-The -v option allows you to couple a folder on your local computer to a folder in the docker image. The results of Dimalis will thus be directly outputted in the path you provided, in specific subfolders for the denoising, segmentation and tracking results.
+### STrack results
 
-After running the docker run command, four new subfolders will be generated in the path you provided:
-
-The BM3D subfolder will contain the denoised images (if you chose to apply denoising), or the original images (if you chose to skip denoising).
-
-The Omnipose subfolder will contain the segmented masks images.
-
-The feature_tables subfolder will contain one CSV table per image, in which each row corresponds to one cell, and the columns contain characteristics that were measured in these cells (i.e. cell area in pixels, cell minimum and maximum diameter, cell circularity, ...).
-
-The STrack subfolder will contain the tracking results. For each image - 1 (the cells in the 1st image cannot be tracked by definition), STrack returns:
-- a CSV table, that contains the links from cells in the previous to cells in the current image
+After running STrack on your segmented images, a new STrack subfolder will be generated in the folder where your images are located, that contains STrack's results. For each image - 1 (the cells in the 1st image cannot be tracked by definition), STrack returns: <br />
+- a CSV table, that contains the links from cells in the previous to cells in the current image <br />
 - a PNG image, in which these links are represented as red lines
 
-Two summary tables are also outputted:
-- the complete_tracking_table.xlsx table (in the STrack folder), contains all the tracks between all cells, for all timepoints in your timelapse
-- the final_merged_table.xlsx contains all measurements that were extracted from these cells, for all timepoints
+STrack will also return two additional excel formatted files:
+- the "complete_tracking_table" contains tracks from all timepoints combined
+- the "tracked_cells_table" contains information on cells from all timpoints combined
 
-### Step 5: Use Dimalis to analyse cells in your own images
+These two last XLSX files can be used to import STrack's results into an open source software for visualizing and editing networks. We provide a tutorial on how to import STrack's results into Cytoscape, and how to visualise and/or edit the tracks, here: <a href="https://github.com/Helena-todd/STrack/blob/master/tutorial.pdf">Strack Cytoscape tutorial</a>
 
-You can either replace the images in the test_images folder by your own phase contrast images, or provide a different path in the "docker run" command. Always make sure that your image directory contains an /exported subfolder that contains the images that you wish to apply Dimalis on.
+
+
+
+
+
+
+
